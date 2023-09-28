@@ -29,7 +29,7 @@ const updateUser = async (req,res) =>{
 
     await user.updateUser(id, {user_name,email,password})
     .then((response) => {
-        res.send(201).send({message: 'Tarea actualizada'})
+        res.send(201).send({message: 'Usuario Actualizado'})
     })
     .catch((error)=>{
         res.status(401).send({message: 'Error, Datos invalidos'})

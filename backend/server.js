@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const socketIo = require('socket.io');
+const io = socketIo(server);
 
 const UserRoutes = require('./routes/UserRoutes');
 
@@ -20,6 +22,17 @@ const mongooseConnect = async () => {
     }
   };
   
+
+  io.on('connection', (socket) => {
+    console.log('Nuevo usuario conectado.');
+  
+    // Lógica de manejo de mensajes y salas de chat aquí...
+  
+    socket.on('disconnect', () => {
+      console.log('Usuario desconectado.');
+    });
+  });
+
   mongooseConnect();
 
 
