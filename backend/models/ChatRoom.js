@@ -23,6 +23,7 @@ const chatRoomSchema = {
             },
             id_user:{
                 type:mongoose.Types.ObjectId,
+                ref:'User',
                 required: true
             },
             date:{
@@ -48,8 +49,6 @@ const getAllMessages = async ()=>{
     const result = await RoomMessage.find()
     return result;
 };
-
-
 
 module.exports = {
     getAll,

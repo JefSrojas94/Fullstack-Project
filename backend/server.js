@@ -1,17 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const http = require('http');
 const socketIo = require('socket.io');
-const io = socketIo(server);
 
 const UserRoutes = require('./routes/UserRoutes');
 
 const PORT = 3000;
 
-const server = express();
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 
-server.use(express.json());
 
-server.use('/chat/api/v1/users', UserRoutes);
+//server.use(express.json());
+
+//server.use('/chat/api/v1/users', UserRoutes);
 
 const mongooseConnect = async () => {
     try{
