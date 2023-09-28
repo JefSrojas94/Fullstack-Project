@@ -1,7 +1,7 @@
 const message = require('../models/ChatRoom');
 
 const getAllMessages = async (req,res) =>{
-    const messages = await message.getAll()
+    const messages = await message.getAllMessages()
    res.status(201).send({messages});
 };
 /*

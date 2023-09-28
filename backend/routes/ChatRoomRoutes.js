@@ -4,8 +4,8 @@ const ChatRoomController = require('../controllers/ChatRoomController');
 
 router.get('/',ChatRoomController.getAllRooms);
 router.get('/:id', ChatRoomController.getRoom);
-//router.post('/',MessageController.insertMessage);
-//router.patch('/:id',MessageController.updateMessage);
-//router.delete('/:id',MessageController.deleteMessage);
+//router.post('/',ChatRoomController.insertRoom);
+//router.patch('/:id',ChatRoomController.updateRoom);
+//router.delete('/:id',ChatRoomController.deleteRoom);
 
 module.exports = router;
