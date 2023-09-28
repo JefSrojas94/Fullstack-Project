@@ -9,3 +9,18 @@ const chatRoomSchema = {
     members: { },
     message: { },
 };
+
+const Room = mongoose.model('Room',chatRoomSchema);
+
+const getAll = async ()=>{
+    const result = await Room.find()
+    return result;
+};
+const getRoom = async (id) => {
+    return await Room.findById({_id: id})
+}
+
+module.exports = {
+    getAll,
+    getRoom
+}

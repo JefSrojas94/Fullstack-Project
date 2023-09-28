@@ -22,7 +22,7 @@ const getAll = async ()=>{
     return result;
 };
 const getUser = async (id) => {
-    return await Task.findById({_id: id})
+    return await User.findById({_id: id})
 }
 const insertUser = async (user) =>{
     return await User.create(user)
