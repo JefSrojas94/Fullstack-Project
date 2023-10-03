@@ -1,44 +1,24 @@
 const express = require('express');
+const cors = require('cors');
+const app = express();
 const mongoose = require('mongoose');
-const http = require('http');
-const socketIo = require('socket.io');
-
+require('dotenv').config();
 const UserRoutes = require('./routes/UserRoutes');
 
-const PORT = 3000;
+app.use(express.json());
+app.use(cors());
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+app.use('/chat/api/v1/users', UserRoutes);
 
+const port = process.env.PORT || 3000;
+const uri = process.env.ATLAS_URI;
 
-//server.use(express.json());
-
-//server.use('/chat/api/v1/users', UserRoutes);
-
-const mongooseConnect = async () => {
-    try{
-      await mongoose.connect('mongodb+srv://jrojas14:osNPlyIYS04edozl@cluster0.cqhkh2x.mongodb.net/?retryWrites=true&w=majority')
-      console.log('Conexión exitosa')
-    }catch(error){
-      console.error(error)
-    }
-  };
-  
-
-  io.on('connection', (socket) => {
-    console.log('Nuevo usuario conectado.');
-  
-    // Lógica de manejo de mensajes y salas de chat aquí...
-  
-    socket.on('disconnect', () => {
-      console.log('Usuario desconectado.');
-    });
-  });
-
-  mongooseConnect();
-
-
-server.listen(PORT, () => {
-  console.log(`Escuchando en el puerto ${PORT}`)
+app.listen(port, (req, res)=>{
+    console.log(`server running on port: ${port}` )
 });
+
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(()=>console.log("MongoDB connection established"))
+.catch((error)=>console.log("MongoDB connection fail: ", error.message));
