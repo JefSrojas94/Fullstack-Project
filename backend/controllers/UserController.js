@@ -1,57 +1,48 @@
-const user = require('../models/User');
+const userModel = require("../models/User");
+const bcrypt = require("bcrypt");
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
 
-const getAllUsers = async (req,res) =>{
-    const users = await user.getAll()
-   res.status(201).send({users});
+const createToken = (_id) => {
+  const jwtkey = process.env.JWT_SECRET_KEY;
+
+  return jwt.sign({ _id }, jwtkey, { expiresIn: "3d" });
 };
+const registerUser = async (req, res) => {
+  try {
+    const { user_name, email, password } = req.body;
 
-const getUser = async(req,res)=>{
-    const { id } = req.params
-    
-    const result = await user.getUser(id)
-    res.status(201).send({user: result})
-}
+    let userObtained = await userModel.findOne({ email });
 
-const insertUser = async (req,res) =>{
-    const {user_name,email,password} = req.body;
+    if (userObtained)
+      return res.status(400).json("El Nombre de usuario o el correo ya esta registrado...");
 
-    await user.insertUser({user_name,email,password})
-    .then((response) => {
-        res.send(201).send({message: 'Usuario Creado'})
-    })
-    .catch((error)=>{
-        res.status(401).send({message: 'Error, Datos invalidos'})
-    })
+    if (!user_name || !email || !password)
+      return res.status(400).json("Todos los campos son requeridos...");
+
+    if (!validator.isEmail(email))
+      return res.status(400).json("Correo debe ser un correo valido...");
+
+    if (!validator.isStrongPassword(password))
+      return res
+        .status(400)
+        .json(
+          "La contraseña debe tener al menos una minuscula, una mayuscula, un número y un caracter especial..."
+        );
+
+    userObtained = new userModel({ user_name, email, password });
+
+    const salt = await bcrypt.genSalt(10);
+    userObtained.password = await bcrypt.hash(userObtained.password, salt);
+
+    await userObtained.save();
+
+    const token = createToken(userObtained._id);
+
+    res.status(200).json({ _id: userObtained._id, user_name, email, token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
 };
-const updateUser = async (req,res) =>{
-    const { id } = req.params
-    const {user_name,email,password} = req.body;
-
-    await user.updateUser(id, {user_name,email,password})
-    .then((response) => {
-        res.send(201).send({message: 'Usuario Actualizado'})
-    })
-    .catch((error)=>{
-        res.status(401).send({message: 'Error, Datos invalidos'})
-    })
-}
-
-const deleteUser = async (req,res) => {
-    const { id } = req.params
-    await user.deleteUser(id)
-    .then((response) => {
-        res.send(201).send({message: 'Tarea eliminada'})
-    })
-    .catch((error)=>{
-        res.status(401).send({message: 'Error, Tarea no encontrada'})
-    })
-}
-
-
-module.exports ={
-    getAllUsers,
-    getUser,
-    insertUser,
-    updateUser,
-    deleteUser
-}
+module.exports = { registerUser };

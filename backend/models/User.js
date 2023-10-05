@@ -1,52 +1,31 @@
 const mongoose = require('mongoose');
 
-const userSchema = {
+const userSchema = new mongoose.Schema({
     user_name: {
         type: String,
-        require: true
+        required: true,
+        minlength: 3,
+        maxlength: 30,
+        unique: true
     },
     email: {
         type: String,
-        require: true
+        required: true,
+        minlength: 3,
+        maxlength: 200,
+        unique: true
     },
     password: {
         type: String,
-        require: true
+        required: true,
+        minlength: 3,
+        maxlength: 1024
     },
-};
+},{
+    timestamps: true
+});
 
-const User = mongoose.model('User',userSchema)
+const userModel = mongoose.model('User', userSchema);
 
-const getAll = async ()=>{
-    const result = await User.find()
-    return result;
-};
-const getUser = async (id) => {
-    return await User.findById({_id: id})
-}
-const insertUser = async (user) =>{
-    return await User.create(user)
-};
+module.exports = userModel
 
-const updateUser = async (id,newUser) =>{
-    const oldUser = await User.findById({_id: id})
-
-    oldUser.user_name = newUser.user_name;
-    oldUser.email = newUser.email;
-    oldUser.password = newUser.password;
-    
-
-    return await oldUser.save()
-}
-
-const deleteUser = async (id) =>{
-    return await User.deleteOne({_id: id})
-}
-
-module.exports = {
-    getAll,
-    getUser,
-    insertUser,
-    updateUser,
-    deleteUser
-}
