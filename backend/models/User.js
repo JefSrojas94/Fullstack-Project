@@ -26,6 +26,8 @@ const userSchema = new mongoose.Schema({
 });
 
 const userModel = mongoose.model('User', userSchema);
-
-module.exports = userModel
+const getUser = async (id) => {
+    return await userModel.findById(id)
+}
+module.exports = {userModel, getUser}
 

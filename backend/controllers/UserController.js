@@ -75,14 +75,9 @@ const loginUser = async (req, res) => {
 };
 
 const findUser = async (req,res) =>{
-  const userId = req.params.userId;
-  try{
-    const user = await userModel.findById({ userId })
-
-    res.status(200).json(user);
-  }catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
+  const { id } = req.params
+    
+  const result = await userModel.getUser(id)
+  res.status(201).send({User: result})
 }
 module.exports = { registerUser, loginUser, findUser };
