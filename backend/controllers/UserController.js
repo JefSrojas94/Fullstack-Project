@@ -80,4 +80,9 @@ const findUser = async (req,res) =>{
   const result = await userModel.getUser(id)
   res.status(201).send({User: result})
 }
-module.exports = { registerUser, loginUser, findUser };
+
+const getUsers = async (req,res) =>{
+  const users = await userModel.getAllUsers()
+ res.status(201).send({users});
+}
+module.exports = { registerUser, loginUser, findUser, getUsers };
