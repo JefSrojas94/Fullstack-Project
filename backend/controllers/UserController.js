@@ -15,7 +15,9 @@ const registerUser = async (req, res) => {
     let userObtained = await userModel.findOne({ email });
 
     if (userObtained)
-      return res.status(400).json("El Nombre de usuario o el correo ya esta registrado...");
+      return res
+        .status(400)
+        .json("El Nombre de usuario o el correo ya esta registrado...");
 
     if (!user_name || !email || !password)
       return res.status(400).json("Todos los campos son requeridos...");
@@ -45,4 +47,27 @@ const registerUser = async (req, res) => {
     res.status(500).json(error);
   }
 };
-module.exports = { registerUser };
+
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    let userObtained = await userModel.findOne({ email });
+
+    if (!userObtained)
+      return res.status(400).json("Correo o Contraseña incorrectos...");
+
+    const isValidPassword = await bcrypt.compare(
+      password,
+      userObtained.password
+    );
+
+    if (!isValidPassword)
+      return res.status(400).json("Correo o Contraseña incorrectos...");
+    
+    const token = createToken(userObtained._id);
+
+    res.status(200).json({ _id: userObtained._id, user_name: userObtained.user_name, email, token });
+  } catch (error) {}
+};
+module.exports = { registerUser, loginUser };
