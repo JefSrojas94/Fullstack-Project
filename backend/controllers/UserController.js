@@ -1,4 +1,4 @@
-const userModel = require("../models/User");
+const {userModel} = require("../models/User");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
   try {
     const { user_name, email, password } = req.body;
 
-    let userObtained = await userModel.findOne({ email });
+    let userObtained = await userModel.findOne({email});
 
     if (userObtained)
       return res
@@ -52,7 +52,7 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    let userObtained = await userModel.findOne({ email });
+    let userObtained = await userModel.findOne({email});
 
     if (!userObtained)
       return res.status(400).json("Correo o Contraseña incorrectos...");
@@ -77,12 +77,12 @@ const loginUser = async (req, res) => {
 const findUser = async (req,res) =>{
   const { id } = req.params
     
-  const result = await userModel.getUser(id)
+  const result = await userModel.findById(id)
   res.status(201).send({User: result})
 }
 
 const getUsers = async (req,res) =>{
-  const users = await userModel.getAllUsers()
- res.status(201).send({users});
+  const users = await userModel.find()
+  res.status(201).send({users});
 }
 module.exports = { registerUser, loginUser, findUser, getUsers };

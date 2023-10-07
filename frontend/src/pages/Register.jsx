@@ -1,30 +1,68 @@
+import { useContext } from "react";
 import { Alert, Button, Form, Row, Col, Stack } from "react-bootstrap";
+import { AuthContext } from "../context/AuthContext";
 
 const Register = () => {
-  return <>
-  <Form>
-    <Row style={{
-        height:"100vh",
-        justifyContent: "center",
-        paddingTop:"10%",
-    }}>
-        <Col xs={4}>
-        <Stack gap={3}>
-        <h2>Register</h2>
+  const {
+    registerInfo,
+    updateRegisterInfo,
+    registerUser,
+    registerError,
+    isRegisterLoading,
+  } = useContext(AuthContext);
 
-        <Form.Control type="text" placeholder="User Name"/>
-        <Form.Control type="text" placeholder="Email"/>
-        <Form.Control type="password" placeholder="Password"/>
-        <Button variant="primary" type="submit">
-            Register
-        </Button>
+  return (
+    <>
+      <Form onSubmit={registerUser}>
+        <Row
+          style={{
+            height: "100vh",
+            justifyContent: "center",
+            paddingTop: "10%",
+          }}
+        >
+          <Col xs={4}>
+            <Stack gap={3}>
+              <h2>Register</h2>
 
-        <Alert variant="danger"><p>An error ocurred</p></Alert>
-        </Stack>
-        </Col>
-    </Row>
-  </Form>
-  </>;
+              <Form.Control
+                type="text"
+                placeholder="User Name"
+                onChange={(e) =>
+                  updateRegisterInfo({ ...registerInfo, user_name: e.target.value })
+                }
+              />
+              <Form.Control
+                type="text"
+                placeholder="Email"
+                onChange={(e) =>
+                  updateRegisterInfo({ ...registerInfo, email: e.target.value })
+                }
+              />
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                onChange={(e) =>
+                  updateRegisterInfo({
+                    ...registerInfo,
+                    password: e.target.value,
+                  })
+                }
+              />
+              <Button variant="primary" type="submit">
+                {isRegisterLoading ? "Creating your User" : "Register"}
+              </Button>
+              {registerError?.error && (
+                <Alert variant="danger">
+                  <p>{registerError?.message}</p>
+                </Alert>
+              )}
+            </Stack>
+          </Col>
+        </Row>
+      </Form>
+    </>
+  );
 };
 
 export default Register;
