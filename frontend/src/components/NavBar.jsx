@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Container, Nav, Navbar, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import logo from "../assets/Logo.svg"
 
 const NavBar = () => {
   const { user, logoutUser } = useContext(AuthContext);
@@ -9,6 +10,7 @@ const NavBar = () => {
   return (
     <Navbar bg="dark" className="mb-4" style={{ height: "3.75 rem" }}>
       <Container>
+        <img src={logo} height="90px"/>
         <h2>
           <Link to="/" className="link-light text-decoration-none">
             Live Chat App
