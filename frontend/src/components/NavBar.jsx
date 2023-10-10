@@ -11,11 +11,14 @@ const NavBar = () => {
     <Navbar bg="dark" className="mb-4" style={{ height: "3.75 rem" }}>
       <Container>
         <img src={logo} height="90px"/>
+        <strong>
         <h2>
           <Link to="/" className="link-light text-decoration-none">
-            Live Chat App
+            NightwingChat
           </Link>
         </h2>
+        </strong>
+        
         {user && (
           <span className="text-warning">Logged in {user?.user_name}</span>
         )}

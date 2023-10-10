@@ -9,13 +9,14 @@ export const ChatContextProvider = ({ children, user }) => {
   const [userChatsError, setUserChatsError] = useState(null);
   const [potentialChats, setPotentialChats] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
-  const [messages,setMessages] =useState(null);
+  const [messages, setMessages] = useState(null);
   const [isMessagesLoading, setIsMessagesLoading] = useState(false);
   const [messagesError, setMessagesError] = useState(null);
 
-  console.log("messages",messages)
+  console.log("currentChat", currentChat);
+  console.log("messages", messages);
 
- /* funcion para obtener los chats del usuario remitente*/
+  /* funcion para obtener los chats del usuario remitente*/
   useEffect(() => {
     const getUsers = async () => {
       const response = await getRequest(`${baseUrl}/users/find`);
@@ -67,29 +68,30 @@ export const ChatContextProvider = ({ children, user }) => {
   /* effect para obtener los mensajes del chat actual */
   useEffect(() => {
     const getMessages = async () => {
-      
-        /* se setean carga de mensajes en verdadero y los errores en nulo */
-        setIsMessagesLoading(true);
-        setMessagesError(null);
+      /* se setean carga de mensajes en verdadero y los errores en nulo */
+      setIsMessagesLoading(true);
+      setMessagesError(null);
 
-        const response = await getRequest(`${baseUrl}/messages/${currentChat?._id}`);
-        /* se setea carga de  mensajes en falso */
-        setIsMessagesLoading(false);
-        /* validamos si hay un error y lo regresamos */
-        if (response.error) {
-          return setMessagesError(response);
-        }
-        /* si no hay errores se devuelve la respuesta obtenida */
-        setMessages(response);
-      
+      const response = await getRequest(
+        `${baseUrl}/messages/${currentChat?._id}`
+      );
+      /* se setea carga de  mensajes en falso */
+      setIsMessagesLoading(false);
+      /* validamos si hay un error y lo regresamos */
+      if (response.error) {
+        return setMessagesError(response);
+      }
+      /* si no hay errores se devuelve la respuesta obtenida */
+      setMessages(response);
     };
     getMessages();
   }, [currentChat]);
-  
+
   /* funcion para actualizar chat que esta actualmente */
-  const updateCurrentChat = useCallback ((chat)=>{
-    setCurrentChat(chat)
-  },[])
+  const updateCurrentChat = useCallback((chat) => {
+    setCurrentChat(chat);
+    console.log("chatcontext",chat)
+  }, []);
 
   const createChat = useCallback(async (firstId, secondId) => {
     const response = await postRequest(
@@ -117,7 +119,7 @@ export const ChatContextProvider = ({ children, user }) => {
         messages,
         isMessagesLoading,
         messagesError,
-
+        currentChat
       }}
     >
       {children}
