@@ -3,10 +3,8 @@ import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 
 const PotentialChats = () => {
-    const {user} = useContext(AuthContext);
-  const { potentialChats, createChat } = useContext(ChatContext);
-
-  
+  const { user } = useContext(AuthContext);
+  const { potentialChats, createChat, onlineUsers } = useContext(ChatContext);
 
   return (
     <>
@@ -14,9 +12,19 @@ const PotentialChats = () => {
         {potentialChats &&
           potentialChats.map((u, index) => {
             return (
-              <div className="single-user" key={index} onClick={()=>createChat(user._id,u._id)}>
+              <div
+                className="single-user"
+                key={index}
+                onClick={() => createChat(user._id, u._id)}
+              >
                 {u.user_name}
-                <span className="user-online"></span>
+                <span
+                  className={
+                    onlineUsers?.some((user) => user?.userId === u?._id)
+                      ? "user-online"
+                      : ""
+                  }
+                ></span>
               </div>
             );
           })}

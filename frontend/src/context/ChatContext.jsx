@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { baseUrl, getRequest, postRequest } from "../utils/services";
+import { io } from "socket.io-client";
 
 export const ChatContext = createContext();
 
@@ -12,11 +13,72 @@ export const ChatContextProvider = ({ children, user }) => {
   const [messages, setMessages] = useState(null);
   const [isMessagesLoading, setIsMessagesLoading] = useState(false);
   const [messagesError, setMessagesError] = useState(null);
-  const [sendTextMessageError,setSendTextMessageError] =useState(null)
-  const [newMessage,setNewMessage] = useState(null)
+  const [sendTextMessageError, setSendTextMessageError] = useState(null);
+  const [newMessage, setNewMessage] = useState(null);
+  const [socket, setSocket] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [notificatons, setNotificatons] = useState([]);
 
-  console.log("currentChat", currentChat);
-  console.log("messages", messages);
+  console.log("notifications", notificatons); 
+
+  // socket
+
+  useEffect(() => {
+    const newSocket = io("https://chat-backend-lapv.onrender.com");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (socket === null) return;
+    socket.emit("addNewUser", user?._id);
+    socket.on("getOnlineUsers", (res) => {
+      setOnlineUsers(res);
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, [socket]);
+
+  //send Message
+  useEffect(() => {
+    if (socket === null) return;
+
+    const recipientId = currentChat?.members.find((id) => id !== user?._id);
+
+    socket.emit("sendMessage", { ...newMessage, recipientId });
+  }, [newMessage]);
+
+  //recive message and notification
+
+  useEffect(() => {
+    if (socket === null) return;
+
+    socket.on("getMessage", (res) => {
+      if (currentChat?._id !== res.chatId) return;
+
+      setMessages((prev) => [...prev, res]);
+    });
+
+    socket.on("getNotification", (res) => {
+      const isChatOpen = currentChat?.members.some(id => id === res.senderId);
+
+      if (isChatOpen) {
+        setNotificatons(prev => [{...res, isRead:true}, ...prev]);
+      } else {
+        setNotificatons(prev => [res, ...prev]);
+      }
+    });
+
+    return () => {
+      socket.off("getMessage");
+      socket.off("getNotification");
+    };
+  }, [socket, currentChat]);
 
   /* funcion para obtener los chats del usuario remitente*/
   useEffect(() => {
@@ -106,10 +168,9 @@ export const ChatContextProvider = ({ children, user }) => {
         return setSendTextMessageError(response);
       }
 
-      setNewMessage(response)
-      setMessages((prev)=>[...prev,response])
-      setTextMessage("")
-
+      setNewMessage(response);
+      setMessages((prev) => [...prev, response]);
+      setTextMessage("");
     },
     []
   );
@@ -148,6 +209,8 @@ export const ChatContextProvider = ({ children, user }) => {
         messagesError,
         currentChat,
         sendTextMessage,
+        onlineUsers,
+        notificatons,
       }}
     >
       {children}
