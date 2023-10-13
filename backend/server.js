@@ -30,8 +30,9 @@ server.listen(3001);
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://6526187f1419ad78e71e5c3b--bucolic-stardust-72dee4.netlify.app",
+    origin: "http://localhost:5173",
   },
+  methods: ["GET", "POST"]
 });
 
 let onlineUsers = [];
